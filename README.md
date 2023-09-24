@@ -6,11 +6,11 @@ The GPT-Lib module provides utility functions and classes to interact with the O
 
 #### Key Features:
 
-- `Advanced Logging: Allows you to log variable information, uncaught exceptions, and code tracebacks.`
+- Advanced Logging: Allows you to log variable information, uncaught exceptions, and code tracebacks.
 
-- `Chatbot Functionality: Provides methods to initiate and manage interactions with OpenAI's GPT model.`
+- Chatbot Functionality: Provides methods to initiate and manage interactions with OpenAI's GPT model.
 
-- `Conversation Management: Allows easy storage and retrieval of conversation history in a structured format suitable for OpenAI's API.`
+- Conversation Management: Allows easy storage and retrieval of conversation history in a structured format suitable for OpenAI's API.
 
 #### Key Classes & Methods:
 
