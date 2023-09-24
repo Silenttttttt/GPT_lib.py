@@ -2,7 +2,7 @@ from gpt_lib import Chatbot, Conversation
 
 def main():
     # Initialize Chatbot and Conversation
-    api_key = "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"  # Replace with your OpenAI API Key
+    api_key = "YOUR_OPENAI_API_KEY"  # Replace with your OpenAI API Key
     model = "gpt-3.5-turbo"  # or the desired model
     chatbot = Chatbot(api_key, model, "Hello!")
     conversation = Conversation("Hello!")
