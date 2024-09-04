@@ -12,29 +12,6 @@ The GPT-Lib module provides utility functions and classes to interact with the O
 
 - Conversation Management: Allows easy storage and retrieval of conversation history in a structured format suitable for OpenAI's API.
 
-#### Key Classes & Methods:
-
-- `log_variable_info: Logs information about a given variable.`
-
-- `log_uncaught_exceptions: Logs uncaught exceptions to a file.`
-
-- `Chatbot:__init__(self, api_key, model, starting_message=None): Initializes the chatbot.chat_completion_api(self, conversation_format): Interacts with OpenAI's API to get a response.`
-
-- `__init__(self, api_key, model, starting_message=None): Initializes the chatbot.`
-
-- `chat_completion_api(self, conversation_format): Interacts with OpenAI's API to get a response.`
-
-- `Conversation:__init__(self, starting_message=None): Initializes the conversation.add_message(self, role, content): Adds a message to the conversation.read_from_json(self, filename): Reads conversation history from JSON.write_to_json(self, filename): Writes conversation history to JSON.get_conversation_format(self): Gets conversation in a structured format for OpenAI's API.`
-
-- `__init__(self, starting_message=None): Initializes the conversation.`
-
-- `add_message(self, role, content): Adds a message to the conversation.`
-
-- `read_from_json(self, filename): Reads conversation history from JSON.`
-
-- `write_to_json(self, filename): Writes conversation history to JSON.`
-
-- `get_conversation_format(self): Gets conversation in a structured format for OpenAI's API.`
 
 ### How To Use:
 
@@ -60,3 +37,28 @@ Run the example script. Interact with the AI and experience a real-time conversa
 - `The logging mechanism provided in the module helps in debugging and tracking. Check the variables.log and app.log for logged details.`
 
 - `OpenAi's documentation: https://platform.openai.com/docs/api-reference/introduction and https://openai.com/blog/function-calling-and-other-api-updates`
+
+
+#### Key Classes & Methods:
+
+- `log_variable_info: Logs information about a given variable.`
+
+- `log_uncaught_exceptions: Logs uncaught exceptions to a file.`
+
+- `Chatbot:__init__(self, api_key, model, starting_message=None): Initializes the chatbot.chat_completion_api(self, conversation_format): Interacts with OpenAI's API to get a response.`
+
+- `__init__(self, api_key, model, starting_message=None): Initializes the chatbot.`
+
+- `chat_completion_api(self, conversation_format): Interacts with OpenAI's API to get a response.`
+
+- `Conversation:__init__(self, starting_message=None): Initializes the conversation.add_message(self, role, content): Adds a message to the conversation.read_from_json(self, filename): Reads conversation history from JSON.write_to_json(self, filename): Writes conversation history to JSON.get_conversation_format(self): Gets conversation in a structured format for OpenAI's API.`
+
+- `__init__(self, starting_message=None): Initializes the conversation.`
+
+- `add_message(self, role, content): Adds a message to the conversation.`
+
+- `read_from_json(self, filename): Reads conversation history from JSON.`
+
+- `write_to_json(self, filename): Writes conversation history to JSON.`
+
+- `get_conversation_format(self): Gets conversation in a structured format for OpenAI's API.`
