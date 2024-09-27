@@ -19,7 +19,7 @@ This repository contains a Python module that uses OpenAI's GPT model to autocom
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/yourusername/gpt-autocomplete.git
+   git clone https://github.com/Silenttttttt/gpt-autocomplete.git
    cd gpt-autocomplete
    ```
 
