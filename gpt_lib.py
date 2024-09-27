@@ -1,3 +1,4 @@
+import json
 from openai import OpenAI
 
 class Chatbot:
@@ -20,6 +21,7 @@ class Chatbot:
 
         except Exception as e:
             print(f"Error interacting with OpenAI API: {str(e)}")
+            traceback.print_exc()
             return None
 
 class Conversation:
@@ -31,6 +33,16 @@ class Conversation:
 
     def get_conversation_format(self):
         return [{"role": message["role"], "content": message["content"]} for message in self.messages]
+
+    def save_to_file(self, file_path):
+        """Save the conversation to a JSON file."""
+        with open(file_path, 'w') as file:
+            json.dump(self.messages, file, indent=4)
+
+    def load_from_file(self, file_path):
+        """Load the conversation from a JSON file."""
+        with open(file_path, 'r') as file:
+            self.messages = json.load(file)
 
 def create_chatbot(api_key, model):
     """
@@ -44,9 +56,10 @@ def create_conversation():
     """
     return Conversation()
 
+
 if __name__ == "__main__":
     # Example usage
-    api_key = "your_openai_api_key"
+    api_key = "your_api_key_here"
     model = "gpt-4o-mini"  # Replace with the model you are using
 
     # Create a Chatbot instance
@@ -71,11 +84,18 @@ if __name__ == "__main__":
     """
     user_input = "How are you doing today?"
 
+    # Load the conversation from a file
+    conversation.load_from_file('conversation.json')
+
     conversation.add_message("system", system_message)
     conversation.add_message("user", user_input)
 
     # Get the conversation format
     messages = conversation.get_conversation_format()
+
+    # Save the conversation to a file
+    conversation.save_to_file('conversation.json')
+
 
     # Get the GPT response
     response = chatbot.chat_completion(messages)
