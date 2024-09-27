@@ -1,64 +1,95 @@
-### GPT-Lib
+# GPT Autocomplete
 
-#### Overview:
+## Description
 
-The GPT-Lib module provides utility functions and classes to interact with the OpenAI GPT model, manage conversations, and log variable information as well as uncaught exceptions. This module leverages OpenAI's API and offers a comprehensive logging mechanism for debugging and tracking.
+This repository contains a Python module that uses OpenAI's GPT model to autocomplete text. The module provides functions to interact with the GPT model and generate text continuations based on user input. It also supports saving and loading conversations to and from JSON files.
 
-#### Key Features:
+## Features
 
-- Advanced Logging: Allows you to log variable information, uncaught exceptions, and code tracebacks.
+- Uses OpenAI's GPT model to generate an autocomplete continuation of the provided text.
+- Provides a simple API for interacting with the GPT model.
+- Supports saving and loading conversations to and from JSON files.
 
-- Chatbot Functionality: Provides methods to initiate and manage interactions with OpenAI's GPT model.
+## Requirements
 
-- Conversation Management: Allows easy storage and retrieval of conversation history in a structured format suitable for OpenAI's API.
+- Python 3.x
+- OpenAI API key
 
+## Installation
 
-### How To Use:
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/yourusername/gpt-autocomplete.git
+   cd gpt-autocomplete
+   ```
 
-1. Ensure you have the necessary libraries installed: openai, loguru, and others as mentioned in the module.
+2. Install the required libraries:
+   ```sh
+   pip install openai
+   ```
 
-2. Initialize the Chatbot class with your OpenAI API key and desired model.
+## Usage
 
-3. Start a conversation using the Conversation class and interact with the GPT model using the Chatbot class.
+1. Create a new script, `main.py`, and use the `gpt_lib` module:
 
-4. Add, read, and write messages using the provided methods in the Conversation class.
+   ```python
+   import gpt_lib
 
+   if __name__ == "__main__":
+       # Define your API key and model
+       api_key = "your_openai_api_key"
+       model = "gpt-4o-mini"  # Replace with the model you are using
 
-## Example Usage:
+       # Create a Chatbot instance
+       chatbot = gpt_lib.create_chatbot(api_key, model)
 
-An example is provided in the `Example.py` demonstrating a back-and-forth chat with the AI using the same conversation.
+       # Create a Conversation instance
+       conversation = gpt_lib.create_conversation()
 
-Run the example script. Interact with the AI and experience a real-time conversation. You can continue or stop the chat as you wish.
+       # Add system and user messages
+       system_message = """
+       You are an AI designed to assist users by continuing their sentences based on the context provided. 
+       Your goal is to continue the text without repeating any letters or words already present in the input. 
+       Ensure that your completions are coherent and contextually relevant.
 
-### Notes:
+       Examples:
+       - User: "Tell me about the wea"
+         AI: "ther today."
+       - User: "The quick brown"
+         AI: "fox jumps over the lazy dog."
+       - User: "I love programming in Pyt"
+         AI: "hon because it's versatile."
+       """
+       user_input = "Tell me about the wea"
 
-- `Ensure you have a valid API key from OpenAI.`
+       conversation.add_message("system", system_message)
+       conversation.add_message("user", user_input)
 
-- `The logging mechanism provided in the module helps in debugging and tracking. Check the variables.log and app.log for logged details.`
+       # Save the conversation to a file
+       conversation.save_to_file('conversation.json')
 
-- `OpenAi's documentation: https://platform.openai.com/docs/api-reference/introduction and https://openai.com/blog/function-calling-and-other-api-updates`
+       # Load the conversation from a file
+       conversation.load_from_file('conversation.json')
 
+       # Get the conversation format
+       messages = conversation.get_conversation_format()
 
-#### Key Classes & Methods:
+       # Get the GPT response
+       response = chatbot.chat_completion(messages)
 
-- `log_variable_info: Logs information about a given variable.`
+       # Print the response
+       print(response)
+   ```
 
-- `log_uncaught_exceptions: Logs uncaught exceptions to a file.`
+2. Run the script:
+   ```sh
+   python main.py
+   ```
 
-- `Chatbot:__init__(self, api_key, model, starting_message=None): Initializes the chatbot.chat_completion_api(self, conversation_format): Interacts with OpenAI's API to get a response.`
+## License
 
-- `__init__(self, api_key, model, starting_message=None): Initializes the chatbot.`
+This project is licensed under the MIT License.
+````
 
-- `chat_completion_api(self, conversation_format): Interacts with OpenAI's API to get a response.`
-
-- `Conversation:__init__(self, starting_message=None): Initializes the conversation.add_message(self, role, content): Adds a message to the conversation.read_from_json(self, filename): Reads conversation history from JSON.write_to_json(self, filename): Writes conversation history to JSON.get_conversation_format(self): Gets conversation in a structured format for OpenAI's API.`
-
-- `__init__(self, starting_message=None): Initializes the conversation.`
-
-- `add_message(self, role, content): Adds a message to the conversation.`
-
-- `read_from_json(self, filename): Reads conversation history from JSON.`
-
-- `write_to_json(self, filename): Writes conversation history to JSON.`
-
-- `get_conversation_format(self): Gets conversation in a structured format for OpenAI's API.`
+This setup provides a clean and focused module for generating text continuations using OpenAI's GPT model, along with support for saving and loading conversations to and from JSON files. The example script and detailed instructions in the README demonstrate how to use these features.
+`````
