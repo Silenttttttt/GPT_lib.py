@@ -1,173 +1,84 @@
-import os
-import openai
-import json
-import time
-import inspect
-from loguru import logger
-import sys
-import logging
-import traceback
-import builtins
-from io import StringIO
-from contextlib import redirect_stdout
-import trace
-import datetime
+from openai import OpenAI
 
-# Setup for logger
-logger.remove()
-logger.add("variables.log", level="INFO", enqueue=True)
-logger.add("variables.log", level="ERROR", enqueue=True)
-
-def log_variable_info(variable, name=None):
-    """
-    Logs information about a given variable including its name, type, value, 
-    the function it was called from, filename, and traceback.
-    """
-    # Get the frame and details of the caller
-    calling_frame = inspect.currentframe().f_back
-    calling_function_name = calling_frame.f_code.co_name
-    calling_line_number = calling_frame.f_lineno
-    calling_file_name = calling_frame.f_code.co_filename
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
-    
-    # Formulate the traceback excluding the current function call
-    tb_list = traceback.format_stack()
-    tb_list.pop(-1)
-    tb_list = [tb.strip() for tb in tb_list]
-    
-    # Attempt to get the variable's attributes if it's an object
-    if isinstance(variable, object):
-        try:
-            variable_value = str(vars(variable))
-        except:
-            variable_value = str(variable)
-    else:
-        variable_value = str(variable)
-    
-    # Construct the log message
-    log_dict = {
-        "Name": name,
-        "line_number": calling_line_number,
-        "timestamp": timestamp,
-        "function_name": calling_function_name,
-        "file_name": calling_file_name,
-        "variable_type": str(type(variable)),
-        "variable_value": variable_value,
-        "traceback": tb_list
-    }
-    log_json = json.dumps(log_dict, indent=2)
-    logger.info(log_json)
-
-def log_uncaught_exceptions(exc_type, exc_value, exc_traceback):
-    """
-    Logs uncaught exceptions to a file.
-    """
-    # Construct the log message
-    log_dict = {
-        "exception_type": str(exc_type),
-        "exception_value": str(exc_value),
-        "exception_traceback": traceback.format_tb(exc_traceback)
-    }
-    log_json = json.dumps(log_dict, indent=2)
-
-    # Write the log message to a file and also log using logger
-    with open('variables.log', 'a') as f:
-        f.write(log_json)
-        f.write('\n')
-    logger.error(log_json, exc_info=(exc_type, exc_value, exc_traceback))
-
-# Setup for code tracing using the standard logging module
-logging.basicConfig(filename='app.log', level=logging.INFO)
-
-def log_trace(frame, event, arg):
-    """
-    Function to trace and log each executed line of code.
-    """
-    if event != 'line':
-        return
-
-    co = frame.f_code
-    func_name = co.co_name
-    filename = co.co_filename
-    line_no = frame.f_lineno
-    line = linecache.getline(filename, line_no).strip()
-
-    logging.debug(f"{func_name}({arg}) {filename}:{line_no} {line}")
-
-    return log_trace
-
-def start_logging():
-    """
-    Starts the code execution logging.
-    """
-    sys.settrace(log_trace)
-
-def stop_logging():
-    """
-    Stops the code execution logging.
-    """
-    sys.settrace(None)
-
-# Chatbot functionalities
 class Chatbot:
-    def __init__(self, api_key, model, starting_message=None): 
-        """
-        Initializes the Chatbot with given API key, model, and an optional starting message.
-        """
-        self.api_key = api_key
+    def __init__(self, api_key, model):
+        """Initialize with API key and model."""
+        self.client = OpenAI(api_key=api_key)
         self.model = model
-        self.conversation = Conversation(starting_message)
 
-    def chat_completion_api(self, conversation_format):
-        """
-        Interacts with OpenAI's ChatCompletion API for a response based on the current conversation.
-        """
-        # Set the OpenAI API key
-        openai.api_key = self.api_key
+    def chat_completion(self, messages):
+        """Centralized chat completion logic."""
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=messages
+            )
 
-        # Construct the messages for the chat completion API
-        messages = [{"role": message["role"], "content": message["content"].lower()} for message in conversation_format]
-        
-        # Make the API call and extract the content from the response
-        response = openai.ChatCompletion.create(model=self.model, messages=messages)
-        content = response['choices'][0]['message']['content']
-        
-        return {"response": content}
+            # Get the message content from the first choice
+            message = response.choices[0].message.content
+            return message
+
+        except Exception as e:
+            print(f"Error interacting with OpenAI API: {str(e)}")
+            return None
 
 class Conversation:
-    def __init__(self, starting_message=None):  
-        """
-        Initializes the Conversation with an optional starting message.
-        """
-        self.messages = [{"role": "system", "content": "Starting message" if starting_message is None else starting_message}]
+    def __init__(self):
+        self.messages = []  # No default starting message
 
     def add_message(self, role, content):
-        """
-        Adds a message to the conversation.
-        """
         self.messages.append({"role": role, "content": content})
 
-    def read_from_json(self, filename):
-        """
-        Reads the conversation history from a JSON file.
-        """
-        try:
-            with open(filename, "r") as f:
-                conversation_json = json.load(f)
-            self.messages = conversation_json["messages"]
-        except:
-            pass
-
-    def write_to_json(self, filename):
-        """
-        Writes the conversation history to a JSON file.
-        """
-        conversation_json = {"messages": self.messages}
-        with open(filename, "w") as f:
-            json.dump(conversation_json, f, indent=2)
-
     def get_conversation_format(self):
-        """
-        Returns the conversation in a formatted structure suitable for OpenAI's API.
-        """
         return [{"role": message["role"], "content": message["content"]} for message in self.messages]
+
+def create_chatbot(api_key, model):
+    """
+    Function to create a Chatbot instance.
+    """
+    return Chatbot(api_key=api_key, model=model)
+
+def create_conversation():
+    """
+    Function to create a Conversation instance.
+    """
+    return Conversation()
+
+if __name__ == "__main__":
+    # Example usage
+    api_key = "your_openai_api_key"
+    model = "gpt-4o-mini"  # Replace with the model you are using
+
+    # Create a Chatbot instance
+    chatbot = create_chatbot(api_key, model)
+
+    # Create a Conversation instance
+    conversation = create_conversation()
+
+    # Add system and user messages
+    system_message = """
+    You are an AI assistant designed to help users with a variety of tasks, such as answering questions, providing information, and offering recommendations. 
+    Your goal is to assist the user in the most helpful and efficient manner possible. 
+    Ensure that your responses are accurate, relevant, and clear.
+
+    Examples:
+    - User: "What's the weather like today?"
+      AI: "The weather today is sunny with a high of 75°F."
+    - User: "Can you recommend a good book?"
+      AI: "I recommend 'To Kill a Mockingbird' by Harper Lee."
+    - User: "How do I bake a cake?"
+      AI: "To bake a cake, you will need flour, sugar, eggs, and butter. Start by preheating your oven to 350°F..."
+    """
+    user_input = "How are you doing today?"
+
+    conversation.add_message("system", system_message)
+    conversation.add_message("user", user_input)
+
+    # Get the conversation format
+    messages = conversation.get_conversation_format()
+
+    # Get the GPT response
+    response = chatbot.chat_completion(messages)
+
+    # Print the response
+    print(response)
