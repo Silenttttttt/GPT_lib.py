@@ -88,7 +88,7 @@ This repository contains a Python module that uses OpenAI's GPT model to autocom
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under  under the GNU General Public License v3.0
 ````
 
 This setup provides a clean and focused module for generating text continuations using OpenAI's GPT model, along with support for saving and loading conversations to and from JSON files. The example script and detailed instructions in the README demonstrate how to use these features.
