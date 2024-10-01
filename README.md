@@ -1,4 +1,4 @@
-# GPT Autocomplete
+# GPT Lib
 
 ## Description
 
