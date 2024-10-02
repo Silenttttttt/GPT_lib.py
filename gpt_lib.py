@@ -1,4 +1,7 @@
 import json
+import os
+import time
+import traceback
 from openai import OpenAI
 
 class Chatbot:
@@ -21,7 +24,6 @@ class Chatbot:
 
         except Exception as e:
             print(f"Error interacting with OpenAI API: {str(e)}")
-            import traceback
             traceback.print_exc()
             return None
 
@@ -37,13 +39,47 @@ class Conversation:
 
     def save_to_file(self, file_path):
         """Save the conversation to a JSON file."""
-        with open(file_path, 'w') as file:
-            json.dump(self.messages, file, indent=4)
+        try:
+            with open(file_path, 'w') as file:
+                json.dump(self.messages, file, indent=4)
+        except Exception as e:
+            traceback.print_exc()
+            print(f"Error saving conversation to file: {str(e)}")
+            return False
+        return True
 
     def load_from_file(self, file_path):
         """Load the conversation from a JSON file."""
-        with open(file_path, 'r') as file:
-            self.messages = json.load(file)
+        if not os.path.exists(file_path):
+            print(f"File {file_path} does not exist.")
+            return False
+        try:
+            with open(file_path, 'r') as file:
+                self.messages = json.load(file)
+        except Exception as e:
+            traceback.print_exc()
+            print(f"Error loading conversation from file: {str(e)}")
+            return False
+        return True
+
+    def get_status(self):
+        """Get the status of the conversation."""
+        num_messages = len(self.messages)
+        num_tokens = sum(len(message["content"].split()) for message in self.messages)
+        num_chars = sum(len(message["content"]) for message in self.messages)
+        return {
+            "num_messages": num_messages,
+            "num_tokens": num_tokens,
+            "num_chars": num_chars
+        }
+
+    def delete(self, file_path):
+        """Delete the conversation file."""
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            print(f"Conversation '{file_path}' deleted successfully.")
+        else:
+            print(f"Conversation '{file_path}' does not exist.")
 
 
 
@@ -74,21 +110,36 @@ if __name__ == "__main__":
     """
     user_input = "How are you doing today?"
 
-    # Load the conversation from a file
-    conversation.load_from_file('conversation.json')
 
     conversation.add_message("system", system_message)
     conversation.add_message("user", user_input)
 
-    # Get the conversation format
-    messages = conversation.get_conversation_format()
-
     # Save the conversation to a file
     conversation.save_to_file('conversation.json')
 
+    # Load the conversation from a file
+    conversation.load_from_file('conversation.json')
+
+    # Get the conversation format
+    messages = conversation.get_conversation_format()
 
     # Get the GPT response
     response = chatbot.chat_completion(messages)
 
+    # Add the assistant's response to the conversation
+    conversation.add_message("assistant", response)
+
+    # Save the conversation to a file
+    conversation.save_to_file('conversation.json')
+
     # Print the response
     print(response)
+
+    # Wait for 3 seconds
+    time.sleep(3)
+
+    # Get the status of the conversation
+    print(conversation.get_status())
+
+    # Delete the conversation file
+    conversation.delete('conversation.json')
