@@ -21,6 +21,7 @@ class Chatbot:
 
         except Exception as e:
             print(f"Error interacting with OpenAI API: {str(e)}")
+            import traceback
             traceback.print_exc()
             return None
 
@@ -44,17 +45,6 @@ class Conversation:
         with open(file_path, 'r') as file:
             self.messages = json.load(file)
 
-def create_chatbot(api_key, model):
-    """
-    Function to create a Chatbot instance.
-    """
-    return Chatbot(api_key=api_key, model=model)
-
-def create_conversation():
-    """
-    Function to create a Conversation instance.
-    """
-    return Conversation()
 
 
 if __name__ == "__main__":
@@ -63,10 +53,10 @@ if __name__ == "__main__":
     model = "gpt-4o-mini"  # Replace with the model you are using
 
     # Create a Chatbot instance
-    chatbot = create_chatbot(api_key, model)
+    chatbot = Chatbot(api_key, model)
 
     # Create a Conversation instance
-    conversation = create_conversation()
+    conversation = Conversation()
 
     # Add system and user messages
     system_message = """
