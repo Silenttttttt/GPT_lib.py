@@ -65,10 +65,16 @@ class Conversation:
     def get_status(self):
         """Get the status of the conversation."""
         num_messages = len(self.messages)
+        num_user_messages = sum(1 for message in self.messages if message["role"] == "user")
+        num_system_messages = sum(1 for message in self.messages if message["role"] == "system")
+        num_assistant_messages = sum(1 for message in self.messages if message["role"] == "assistant")
         num_tokens = sum(len(message["content"].split()) for message in self.messages)
         num_chars = sum(len(message["content"]) for message in self.messages)
         return {
             "num_messages": num_messages,
+            "num_user_messages": num_user_messages,
+            "num_system_messages": num_system_messages,
+            "num_assistant_messages": num_assistant_messages,
             "num_tokens": num_tokens,
             "num_chars": num_chars
         }
@@ -134,9 +140,6 @@ if __name__ == "__main__":
 
     # Print the response
     print(response)
-
-    # Wait for 3 seconds
-    time.sleep(3)
 
     # Get the status of the conversation
     print(conversation.get_status())
