@@ -1,6 +1,5 @@
 # GPT Lib
 
-## Description
 
 This repository contains a Python module that uses OpenAI's GPT model to autocomplete text. The module provides functions to interact with the GPT model and generate text continuations based on user input. It also supports saving and loading conversations to and from JSON files.
 
